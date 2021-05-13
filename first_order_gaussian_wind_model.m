@@ -1,4 +1,7 @@
-mu_w_k=exp(-Ts/tau)*mu_k_prev+w_k_gm;
-% tau- correlation time of the GM process, w_k_gm is the driven noise with
-% variance given
-sigma_gm=sigma_b^2(1-2^(2Ts/tau));
+mu_w(:,1)=[0; 0; 0];
+sigma=[1e-6 0 0;0 1e-6 0;0 0 1e-6];
+R=chol(sigma);
+z = repmat(mu_w(:,1)',100,1) + randn(100,3)*R;
+for i=1:100
+   mu_w(:,i+1)=mu_w(:,i)+z(i,:)';
+end
