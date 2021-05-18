@@ -18,6 +18,6 @@ sigma_v=sigma_w/(0.177+0.000823*h)^0.4;% RMS turbulence intensity
 
 sigma_u=sigma_v; %RMS turbulence intensity
 L_u=h/(0.177+0.000823*h)^1.2;
-u_g(k+1,1)=(1-V*dt/L_u)*u_g(k,1)+sqrt(2*V*dt/L_u)*sigma_u/W(k,1);
+u_g(k+1,1)=(1-V*dt/L_u)*u_g(k,1)+sqrt(2*V*dt/L_u)*sigma_u*W(k,1);
 end
 plot(u_g(1:T));
