@@ -1,10 +1,10 @@
 
-function[vt_nonlinear_model,A]=dryden_wind_model(air_speed,altitude,ug_prev, vg_prev,wg_prev,alpha, beta,u_t_pred,v_t_pred,w_t_pred)
+function[vt_nonlinear_model,A]=dryden_wind_model(air_speed,altitude,mu_vt_prev,alpha, beta)
 %% Non Linear Model Inputs
 V=air_speed*1.943; % airspeed in knots
 
 h=altitude*3.28; %height in ft
-u_r=10;
+u_r=10;% where do we get this from??
 dt=0.1;
 mu_ug=0;
 Q=2;
@@ -20,7 +20,16 @@ L_w=h;
 L_u=h/(0.177+0.000823*h)^1.2; %turbulence length scale
 L_v=L_u;
 
-%% wind speed druyden non linear model
+
+%% wind speed dryden non linear model
+u_t_pred=mu_vt_prev(1,1);
+v_t_pred=mu_vt_prev(2,1);
+w_t_pred=mu_vt_prev(3,1);
+
+ug_prev=mu_vt_prev(1,1);
+vg_prev=mu_vt_prev(2,1);
+wg_prev=mu_vt_prev(3,1);
+
 ug=(1-V*dt/L_u)*ug_prev+sqrt(2*V*dt/L_u)*sigma_u*noise;
 ug=ug*0.5144; % ug in m/s
 
