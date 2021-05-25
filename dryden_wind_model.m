@@ -1,5 +1,5 @@
 
-function[ug,vg,wg,A]=dryden_wind_model(air_speed,altitude,ug_prev, vg_prev,wg_prev,alpha, beta,u_t_pred,v_t_pred,w_t_pred)
+function[vt_nonlinear_model,A]=dryden_wind_model(air_speed,altitude,ug_prev, vg_prev,wg_prev,alpha, beta,u_t_pred,v_t_pred,w_t_pred)
 %% Non Linear Model Inputs
 V=air_speed*1.943; % airspeed in knots
 
@@ -30,6 +30,7 @@ vg=vg*0.5144; % ug in m/s
 wg=(1-V*dt/L_u)*wg_prev+sqrt(2*V*dt/L_u)*sigma_w*noise;
 wg=wg*0.5144; % ug in m/s
 
+vt_nonlinear_model=[ug;vg;wg];
 %% Jacobian
 v=[1-dt*(V/L_u)  1-dt*(V/L_v) 1-dt*(V/L_w) ]; % Equation 27
 
