@@ -62,6 +62,7 @@ function y = measurement_with_noise(state, R)
 end
 
 function y = measurement(state)
+    % can be a nonlinear g function
     C = [0.4 0.9 0.1; 0.5 0.2 0.5];
     y = C*state;
 end
