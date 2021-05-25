@@ -9,7 +9,7 @@ vt=1;
 wt=1;
 for k=1:1000
     
-   [a(k,1),A]= dryden_wind_model(air_speed,altitude,mu,alpha,beta,ut,vt,wt);
+   [a(k,1),A]= dryden_wind_model(air_speed,altitude,mu,mu,mu,alpha,beta,ut,vt,wt);
    mu=a(k,1);
 end
 plot(a);
