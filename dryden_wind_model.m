@@ -1,6 +1,7 @@
 
 function[vt_nonlinear_model,A]=dryden_wind_model(air_speed,altitude,mu_vt_prev,alpha, beta)
-%% Non Linear Model Inputs
+%% Non Linear Model Inputs: air speed,altitude,predicted_turbulent_speed_vector, alpha,beta
+%% Outputs: updated_turbulent_speeds_vector and Jacobian
 V=air_speed*1.943; % airspeed in knots
 
 h=altitude*3.28; %height in ft
