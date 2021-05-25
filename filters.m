@@ -1,6 +1,9 @@
 %%% This file contains mock data to demonstrate the following filters
 % - Kalman filter (linear)
 % - Extended Kalman filter
+% - Iterated Extended Kalman Filter
+% - Unscented Kalman Filter
+% - Particle Filter
 
 % Mock data
 dt = 0.1; N = 10*1/dt;
@@ -78,7 +81,7 @@ function h = plot_state(time_vec, state_values, mu_values, ind)
     legend show; grid on;
 end
 
-
+%% Kalman filter (linear)
 % Inputs: mu_k, Sig_k, u_k, y_kp, A, B, Q, C, R
 % Outputs: mu_kp, Sig_kp
 function [mu_kp, Sig_kp] = kalman_filter(mu_k, Sig_k, u_k, y_kp, A, B, C, Q, R)
@@ -93,6 +96,7 @@ function [mu_kp, Sig_kp] = kalman_filter(mu_k, Sig_k, u_k, y_kp, A, B, C, Q, R)
     Sig_kp = Sig_pred - K*C*Sig_pred;
 end
 
+%% Extended Kalman Filter
 % Inputs: mu_k, Sig_k, u_k, y_kp, dynamics, measurement, A, C, Q, R
 % Function signatures: dynamics(x,u) and measurement(x)
 % A and C are Jacobians of dynamics and measurement respectively wrt state
@@ -107,4 +111,159 @@ function [mu_kp, Sig_kp] = extended_Kalman_filter(mu_k, Sig_k, u_k, y_kp, dynami
     K = Sig_pred*C'/(C*Sig_pred*C' + R); % Kalman gain
     mu_kp = mu_pred + K*ybar;
     Sig_kp = Sig_pred - K*C*Sig_pred;
+end
+
+%% iEKF
+function [mu_k_k,Sig_k_k] = iEKF(mu_km_km, Sig_km_km, u_km, y_k, dynamics, measurement, A_k, C_k, Q, R, verbose)
+    % predict step
+    mu_k_km = dynamics(mu_km_km, u_km);
+    Sig_k_km = A_k*Sig_km_km*A_k' + Q;
+    
+    % update step
+    mu_k_old = mu_k_km; i = 0;
+    converged = false; 
+    while ~converged
+        ybar_k = y_k - measurement(mu_k_old, u_km);
+        C_k = C(mu_k_old);
+        K_k = Sig_k_km * C_k' / (C_k*Sig_k_km*C_k'+R);
+        mu_k_new = mu_k_km + K_k*ybar_k + K_k*C_k*(mu_k_old - mu_k_km);
+        if (mu_k_new == mu_k_old)
+            converged = true;
+            if verbose
+                fprintf('iEKF: Converged at iteration %i \n',i);
+            end
+        end
+        if i>100
+            converged = true;
+            if verbose
+                fprintf('iEKF: Timing out after 100 iterations\n');
+            end
+        end
+        i = i+1;
+        mu_k_old = mu_k_new;        
+    end
+    mu_k_k = mu_k_new;
+    Sig_k_k = Sig_k_km - K_k*C_k*Sig_k_km;
+end
+
+%% Unscented Kalman Filter
+function [mu_k_k,Sig_k_k] = UKF(mu_km_km, Sig_km_km, u_km, y_k, dynamics, measurement, Q, R, verbose)
+    global xdim; global ydim;
+    % predict step
+    % mu_km_km is of size (n,1), prior_points is of size (n,2n+1), weights is of size (2n+1,1)
+    [prior_points, w0, wi] = UT(mu_km_km, Sig_km_km);
+    pred_points = prior_points;
+    for i = 1:2*xdim+1
+        pred_points(:,i) = dynamics(prior_points(:,i), u_km);
+    end
+    [mu_k_km, Sig_k_km] = UTinv(pred_points, w0, wi, Q);
+    
+    % update step
+    [update_points, w0, wi] = UT(mu_k_km, Sig_k_km); % update_points and pred_points same?
+    y_true = zeros(ydim,2*xdim+1);
+    y_est = zeros(ydim,1);
+    for i = 1:size(update_points,2)
+        y_true(:,i) = measurement(update_points(:,i),u_km);
+    end
+    y_est = w0*y_true(:,1) + wi*sum(y_true,2);
+    Cov_Y = zeros(ydim,ydim);
+    Cov_XY = zeros(xdim,ydim);
+    for i = 1:2*xdim+1
+        if i == 1
+            wt_i = w0;
+        else
+            wt_i = wi;
+        end
+        Cov_Y = Cov_Y + wt_i*(y_true(:,i)-y_est)*(y_true(:,i)-y_est)';
+        Cov_XY = Cov_XY + wt_i*(update_points(:,i)-mu_k_km)*(y_true(:,i)-y_est)';
+    end
+    Cov_Y = Cov_Y + R;
+    mu_k_k = mu_k_km + Cov_XY*inv(Cov_Y)*(y_k - y_est);
+    Sig_k_k = Sig_k_km - Cov_XY*inv(Cov_Y)*Cov_XY'; 
+end
+
+%% Helper functions for UKF
+% mu_km_km is of size (xdim,1), prior_points is of size (xdim,2n+1)
+function [prior_points, w0, wi] = UT(mu, Sig)
+    lambda = 2;
+    global xdim;
+    prior_points = zeros(xdim, 2*xdim+1);
+    % weights
+    w0 = lambda/(lambda+xdim);
+    wi = 1/(2*(lambda+xdim));
+    % 0 point
+    prior_points(:,1) = mu;
+    matrix_sqr_root = sqrtm((lambda+xdim)*Sig);
+    for i = 1:xdim
+        % ith point
+        prior_points(:,1+i) = mu + matrix_sqr_root(:,i);
+        % i + nth point
+        prior_points(:,1+i+xdim) = mu - matrix_sqr_root(:,i);
+    end
+end
+
+% points is of size (n,2n+1)
+function [mu, Sig] = UTinv(points, w0, wi, Q)
+    global xdim;
+    n = xdim;
+    mu = zeros(n,1);
+    Sig = zeros(n,n);
+    mu = w0*points(:,1) + wi*sum(points,2);
+    for i = 1:2*n+1
+        if i == 1
+            Sig = Sig + w0*(points(:,i) - mu)*(points(:,i) - mu)';
+        else
+            Sig = Sig + wi*(points(:,i) - mu)*(points(:,i) - mu)';
+        end
+    end
+    Sig = Sig + Q;
+end
+
+%% Particle filter
+function [mu_k_k, Sig_k_k] = particle_filter(mu_km_km, Sig_km_km, u_km, y_k, dynamics_with_noise, measurement, Q, R, verbose)
+    num_particles = 1000;
+    % sample particles
+    prior_points = make_particles(mu_km_km,Sig_km_km,num_particles);    
+    % predict step
+    pred_points = prior_points;
+    unnorm_weights = zeros(num_particles);
+    inv_R = inv(R); % precalculate just once
+    for i = 1:num_particles
+        % predict points
+        pred_points(:,i) = dynamics_with_noise(prior_points(:,i), u_km, Q);
+        % update weights
+        unnorm_weights(i) = gaussian_pdf(y_k, measurement(pred_points(:,i), u_km), inv_R);
+    end
+    norm_weights = unnorm_weights/sum(unnorm_weights);
+    % resample particles 
+    post_points = resample_particles(norm_weights, pred_points);
+    [mu_k_k, Sig_k_k] = get_mu_sig_from_particles(post_points); 
+end
+
+%% Helper functions for particle filter
+function particles = make_particles(mu,Sig,num_particles)
+    % create 1000 particles
+    global xdim;
+%     particles = zeros(xdim, num_particles); 
+    particles = repmat(mu,1,num_particles) + chol(Sig)*randn(xdim,num_particles);
+end
+
+function [mu,Sig] = get_mu_sig_from_particles(particles)
+    mu = mean(particles,2);
+    Sig = cov(particles');
+end
+
+function new_particles = resample_particles(weights, particles)
+    % points ~(xdim, num_particles)
+    % weights ~(num_particles,1)
+    global xdim;
+    num_particles = size(particles,2);
+    % Get new indices
+    inds = randsample(1:num_particles, num_particles, true, weights);
+    new_particles = particles(:,inds);
+end
+
+function likelihood = gaussian_pdf(x, mu, inv_Sig)
+    resid = x - mu;
+    likelihood = exp(-0.5*resid'*inv_Sig*resid);     
 end
