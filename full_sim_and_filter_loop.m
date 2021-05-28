@@ -15,9 +15,12 @@ close all
 % Initial measurement vector = [u; v; w; phi; theta; psi; u_r_m; h]
 
 dt = 0.01; T = 20; t = 0:dt:T;
+global state_dim; global action_dim; global y_dim; global wind_state_dim;
 state_dim = 18; 
+wind_state_dim = 6;
 action_dim = 4; % [da, de, dT, dr]
-y_dim = 4; % 
+y_dim = 4; 
+global N;
 N = length(t);
 state_init = zeros(state_dim,1);
 state = zeros(state_dim, N+1);
@@ -46,12 +49,25 @@ end
 
 % Filtering 
 for i = 2:N
-    % TODO (somrita) : Make Q matrix time dependent
     mu_prev = mu_values(:,i-1);
     Sig_prev = Sig_values(:,:,i-1);
+    cur_time = dt*(i-1);
+    Q = Q_matrix(cur_time);
     [mu_new, Sig_new] = extended_Kalman_filter(mu_prev, Sig_prev, action(:,i-1), y(i), dynamics, measurement, A, C, Q, R);
     mu_values(:,i) = mu_new;
     Sig_values(:,:,i) = Sig_new;
+end
+
+function Q = Q_matrix(time)
+    global state_dim; global wind_state_dim;
+    Q = zeros(state_dim, state_dim);
+    Q(end-wind_state_dim+1:end, end-wind_state_dim+1:end) = wind_Q_matrix(time);
+end
+
+function wind_Q = wind_Q_matrix(time)
+    % TODO (Vishnu) write wind Q
+    global wind_state_dim;
+    wind_Q = time*1/100*eye(wind_state_dim, wind_state_dim);
 end
 
 % maneuver_type can be cruise, climb, descend, turn
