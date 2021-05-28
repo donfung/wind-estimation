@@ -28,12 +28,10 @@ state(:,1) = state_init;
 y = zeros(y_dim, N);
 action = zeros(action_dim, N);
 
-Q = 0.1*eye(state_dim); % TODO : what is reasonable?
-% TODO(Vishnu): Get Q for wind vector
 R = 0.1*eye(y_dim); % TODO: what is reasonable?
 
-mu_0 = [0;0;0];
-Sig_0 = diag([1;1;1]);
+mu_0 = zeros(state_dim,1);
+Sig_0 = 0.1*eye(state_dim);
 
 mu_values = zeros(state_dim, N+1);
 mu_values(:,1) = mu_0;
@@ -43,6 +41,8 @@ Sig_values(:,:,1) = Sig_0;
 % Simulate full states
 for i = 2:N
     action(:,i) = PID('cruise');
+    cur_time = dt*(i-1);
+    Q = Q_matrix(cur_time);
     state(:,i) = dynamics_with_noise(state(:,i-1),action,Q);
     y(i) = measurement_with_noise(state(:,i), R);
 end
@@ -65,7 +65,7 @@ function Q = Q_matrix(time)
 end
 
 function wind_Q = wind_Q_matrix(time)
-    % TODO (Vishnu) write wind Q
+    % TODO (Vishnu) Get Q for wind vector
     global wind_state_dim;
     wind_Q = time*1/100*eye(wind_state_dim, wind_state_dim);
 end
