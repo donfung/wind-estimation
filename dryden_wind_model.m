@@ -2,11 +2,7 @@
 function[v_wind_ned,A]=dryden_wind_model(v_aircraft_ned,v_wind_ned,altitude,phi,theta,psi)
 
 
-%% Non Linear Model 
-
-%% Inputs: air speed NED,wind vector NED,altitude,phi,theta,psi
-
-%% Outputs: updated_turbulent_speeds_vector and Jacobian
+%% Non Linear Model  Inputs: air speed NED,wind vector NED,altitude,phi,theta,psi Outputs: updated_turbulent_speeds_vector and Jacobian
 
 %% Conversions from NED to Body Frame
 %V=air_speed*1.943; % airspeed in knots,magnitude
@@ -34,12 +30,12 @@ mu_ug=0;
 Q=2;
 noise=randn(1,1)*Q;
 W_20=25;%knots wind speed at 20 feet
+%% noise amplitudes Equation 16 and 17
+sigma_w=0.1*W_20; 
+sigma_v=(sigma_w*0.1)/(0.177+0.000823*h)^0.4;
+sigma_u=sigma_v;
 
-sigma_w=0.1*W_20; %RMS turbulence intensity  
-sigma_v=sigma_w/(0.177+0.000823*h)^0.4;% RMS turbulence intensity
-sigma_u=sigma_v; %RMS turbulence intensity
-
-%%Turbulence length scales in u,v,w directions
+%% Turbulence length scales in u,v,w directions Equation 18 and 19
 L_w=h;
 L_u=h/(0.177+0.000823*h)^1.2; %turbulence length scale
 L_v=L_u;
