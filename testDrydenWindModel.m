@@ -2,11 +2,14 @@ clear all;
 air_speed=10;
 altitude=300;
 mu=0;
-alpha=10;
-beta=10;
+phi=10;
+theta=10;
+psi=10;
 V_pred=[1;1;1];
-mu_vt_pred=[1;1;1];
-
-for k=1:1000 
-   [v_turbulent_velocities,A]= dryden_wind_model(air_speed,altitude,mu_vt_pred,alpha,beta);
+%v_wind_speed=[10;1;0;1;1;1];
+airspeed=[100;1;1];
+v_wind_speed=zeros(1,6)';
+for k=1:1000
+   [v_wind_dryden,A]= dryden_wind_model(airspeed,v_wind_speed(:,k),altitude,phi,theta,psi);
+    v_wind_speed(:,k+1)=v_wind_dryden;
 end
