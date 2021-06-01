@@ -127,10 +127,10 @@ for k = 2:n
                x(9, k-1)];      % psi
     y_kp    = measModel(x(:, k-1));% + mvnrnd(zeros(6,1), R)';
     
-%     [mu_kp, Sig_kp] = extended_Kalman_filter(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt);
+    [mu_kp, Sig_kp] = extended_Kalman_filter(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt);
     
-    verbose = true;
-    [mu_kp, Sig_kp] = iEKF(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt, verbose);
+%     verbose = true;
+%     [mu_kp, Sig_kp] = iEKF(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt, verbose);
     
     mu(:, k) = mu_kp;
     cov(:, :, k) = Sig_kp;
