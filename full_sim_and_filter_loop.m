@@ -65,6 +65,8 @@ xlabel('time');
 title('Aircraft height');
 grid on;
 
+[A,B] = full_A_B();
+C = zeros(y_dim, state_dim); % TODO (Don)
 % Filtering 
 for i = 2:N+1
     mu_prev = mu_values(:,i-1);
@@ -75,6 +77,26 @@ for i = 2:N+1
     mu_values(:,i) = mu_new;
     Sig_values(:,:,i) = Sig_new;
 end
+
+% figure 
+% plot3(state(1,:), state(2,:), state(3,:))
+% xlabel('x');
+% ylabel('y');
+% zlabel('z');
+% hold on
+% plot3(mu_values(1,:), mu_values(2,:), mu_values(3,:), 'DisplayName','estimate');
+% title('Aircraft position');
+% legend show;
+% grid on;
+
+% figure 
+% plot(state(13,:))
+% hold on
+% plot(mu_values(13,:))
+% ylabel('h');
+% xlabel('time');
+% title('Aircraft height');
+% grid on;
 
 function Q = Q_matrix(time)
     global state_dim; global wind_state_dim;
@@ -144,6 +166,49 @@ function state_new = dynamics(state, action)
         lat_state_new(3); % r
         new_h; % h
         wind_state_new];
+end
+
+function [A,B] = full_A_B() 
+    global dt; global u0; global state_dim; global action_dim;
+    A = zeros(state_dim, state_dim);
+    B = zeros(state_dim, action_dim);
+    % These are Abar from xdot = Abar*x + Bbar*u
+    % Need x_new = Ax + Bu. x_new = (I + dt*Abar)*x + (dt*Bbar)*u
+    [long_Abar,long_Bbar] = longitudinal_Navion_A_B();
+    long_A = eye(4,4) + dt*long_Abar;
+    long_B = dt*long_Bbar;
+    [lat_Abar,lat_Bbar] = lateral_Navion_A_B();
+    lat_A = eye(5,5) + dt*lat_Abar;
+    lat_B = dt*lat_Bbar;
+    % state_new = [x; y; z; u; v; w; phi; theta; psi; p; q; r; h; windN_s; windE_s; windD_s; windN_t; windE_t; windD_t]
+    % Longitudinal aircraft dynamics
+    % x = [ubar, alpha, q, theta]^T   u = [de, dT]^T % xdot = Ax + Bu
+    A(4,4) = long_A(1,1); A(4,6) = long_A(1,2); A(4,11) = long_A(1,3); A(4,8) = long_A(1,4);
+    A(6,4) = long_A(2,1); A(6,6) = long_A(2,2); A(6,11) = long_A(2,3); A(6,8) = long_A(2,4);
+    A(11,4) = long_A(3,1); A(11,6) = long_A(3,2); A(11,11) = long_A(3,3); A(11,8) = long_A(3,4);
+    A(8,4) = long_A(4,1); A(8,6) = long_A(4,2); A(8,11) = long_A(4,3); A(8,8) = long_A(4,4);
+    % Lateral aircraft dynamics
+    % x = [beta, p, r, phi, psi]^T   u = [da, dr]^T 
+    A(5,5) = lat_A(1,1);    A(5,10) = lat_A(1,2);   A(5,12) = lat_A(1,3);   A(5,7) = lat_A(1,4);    A(5,9) = lat_A(1,5);
+    A(10,5) = lat_A(2,1);   A(10,10) = lat_A(2,2);  A(10,12) = lat_A(2,3);  A(10,7) = lat_A(2,4);   A(10,9) = lat_A(2,5);
+    A(12,5) = lat_A(3,1);   A(12,10) = lat_A(3,2);  A(12,12) = lat_A(3,3);  A(12,7) = lat_A(3,4);   A(12,9) = lat_A(3,5);
+    A(7,5) = lat_A(4,1);    A(7,10) = lat_A(4,2);   A(7,12) = lat_A(4,3);   A(7,7) = lat_A(4,4);    A(7,9) = lat_A(4,5);
+    A(9,5) = lat_A(5,1);    A(9,10) = lat_A(5,2);   A(9,12) = lat_A(5,3);   A(9,7) = lat_A(5,4);    A(9,9) = lat_A(5,5);
+    % xyz
+    A(1:3,1:3) = eye(3,3); A(1:3,4:6) = dt;
+    % h hnew = h_old +  dt* hdot = h_old +  dt*(-u0*alpha + u0*theta) = h_old +  dt*(-w + u0*theta)
+    A(13,13) = 1; A(13,6) = -dt; A(13,7) = dt*u0;
+    % Wind
+    A(14:19,14:19) = wind_A();
+    % action vector = [da, de, dT, dr]
+    % Finish B matrix
+    % TODO(Somrita)
+end
+
+function A = wind_A()
+    % TODO (Vishnu)
+    % Should be 6x6
+    A = eye(6,6);
 end
 
 % Input state: full 18 dim
