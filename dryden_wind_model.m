@@ -5,9 +5,6 @@ function[v_wind_ned,A,Q_process]=dryden_wind_model(v_aircraft_ned,v_wind_ned,alt
 %% Non Linear Model  Inputs: air speed NED,wind vector NED,altitude,phi,theta,psi Outputs: updated_turbulent_speeds_vector and Jacobian
 
 %% Conversions from NED to Body Frame
-%V=air_speed*1.943; % airspeed in knots,magnitude
-%v_n=ground_speed;
-%v_w=wind_speed;
 
 R_bn= [cos(psi)*cos(theta) cos(psi)*sin(phi)*sin(theta)-cos(phi)*sin(psi) sin(phi)*sin(psi)+cos(phi)*cos(psi)*sin(theta);
     cos(theta)*sin(psi) cos(theta)*cos(psi)+sin(phi)*sin(psi)*sin(theta) cos(phi)*sin(psi)*sin(theta)-cos(psi)*sin(phi)];
