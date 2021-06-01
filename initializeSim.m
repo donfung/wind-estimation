@@ -1,12 +1,11 @@
 dt = 0.01;
 
-
 mass = 1000;
 J = diag([1, 1, 1]);
 
 %% INITIAL CONDITIONS
 alt0 = 1000;
-initVelBody  = [5, 1, 0]; % [u, v, w]_body 
+initVelBody  = [40, 5, 0]; % [u, v, w]_body 
 initAttitude = [0, 0, 0]; % [phi, theta, psi]
 initGroundSpeedEst = norm(initVelBody);
 
@@ -16,25 +15,26 @@ initGroundSpeedEst = norm(initVelBody);
 %       Psi = 90: East
 %       Psi = 180: South
 
+%% WIND PARAMETERS
+windNorthStatic = -10;
+windEastStatic = 7;
+windDownStatic = 0;
+
 %% FLAGS
 % 1 = enable. 0 = disable
 sensorNoiseFlag     = 0;  % Sensor noises
-turbulentWindFlag   = 0;  % Turn wind turbulence on/off. 
-staticWindFlag      = 1;  % Turn static wind on/off. 
+turbulentWindFlag   = 0;  % Turn wind turbulence on/off 
+staticWindFlag      = 1;  % Turn static wind on/off
+gustWindFlag        = 0;  % Turn gust (step changes) on/off
 
 %% EKF PARAMETERS
-Qekf = 0.01*eye(6);
-Rekf = 0.01*eye(6);
+% mu = [pn, pe, vg, chi, wn, we]
+
+Qekf = 1*eye(6);
+Rekf = 1*eye(6);
 
 initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
-initCovarianceEkf = 0.01*eye(6);
-
-
-%% WIND PARAMETERS
-windNorthStatic = 1;
-windEastStatic = 0;
-windDownStatic = 0;
-
+initCovarianceEkf = 0.1*eye(6);
 
 %% DISPLAY FOR USER 
 disp(' ');
