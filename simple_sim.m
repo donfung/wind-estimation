@@ -127,7 +127,10 @@ for k = 2:n
                x(9, k-1)];      % psi
     y_kp    = measModel(x(:, k-1));% + mvnrnd(zeros(6,1), R)';
     
-    [mu_kp, Sig_kp] = extended_Kalman_filter(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt);
+%     [mu_kp, Sig_kp] = extended_Kalman_filter(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt);
+    
+    verbose = true;
+    [mu_kp, Sig_kp] = iEKF(mu(:, k-1), cov(:, :, k-1), u_k, y_kp, Q, R, dt, verbose);
     
     mu(:, k) = mu_kp;
     cov(:, :, k) = Sig_kp;
@@ -165,6 +168,41 @@ function [mu_kp, Sig_kp] = extended_Kalman_filter(mu_k, Sig_k, u_k, y_kp, Q, R, 
     K = Sig_pred*C'/(C*Sig_pred*C' + R); % Kalman gain
     mu_kp = mu_pred + K*ybar;
     Sig_kp = Sig_pred - K*C*Sig_pred;
+end
+
+% iEKF
+function [mu_k_k,Sig_k_k] = iEKF(mu_km_km, Sig_km_km, u_km, y_k, Q, R, dt, verbose)
+    % predict step
+    A_k = dynJacobian(mu_km_km, u_km);
+    mu_k_km = dynamics(mu_km_km, u_km, dt);
+    Sig_k_km = A_k*Sig_km_km*A_k' + Q;
+    
+    % update step
+    mu_k_old = mu_k_km; i = 0;
+    converged = false; 
+    while ~converged
+        ybar_k = y_k - measEkf(mu_k_old, u_km);
+%         C_k = C(mu_k_old);
+        C_k = measJacobian(mu_k_old, u_km);
+        K_k = Sig_k_km * C_k' / (C_k*Sig_k_km*C_k'+R);
+        mu_k_new = mu_k_km + K_k*ybar_k + K_k*C_k*(mu_k_old - mu_k_km);
+        if (mu_k_new == mu_k_old)
+            converged = true;
+            if verbose
+                fprintf('iEKF: Converged at iteration %i \n',i);
+            end
+        end
+        if i>100
+            converged = true;
+            if verbose
+                fprintf('iEKF: Timing out after 100 iterations\n');
+            end
+        end
+        i = i+1;
+        mu_k_old = mu_k_new;        
+    end
+    mu_k_k = mu_k_new;
+    Sig_k_k = Sig_k_km - K_k*C_k*Sig_k_km;
 end
 
 function xyzNedDot = xyzNedDeriv(att, uvw)
