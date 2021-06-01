@@ -1,5 +1,5 @@
 
-function[v_wind_ned,A]=dryden_wind_model(v_aircraft_ned,v_wind_ned,altitude,phi,theta,psi)
+function[v_wind_ned,A,Q_process]=dryden_wind_model(v_aircraft_ned,v_wind_ned,altitude,phi,theta,psi)
 
 
 %% Non Linear Model  Inputs: air speed NED,wind vector NED,altitude,phi,theta,psi Outputs: updated_turbulent_speeds_vector and Jacobian
@@ -39,8 +39,11 @@ sigma_u=sigma_v;
 L_w=h;
 L_u=h/(0.177+0.000823*h)^1.2; %turbulence length scale
 L_v=L_u;
-
-%% turbulence wind components of the wind vector
+%% process noise
+a_us=1e-7;a_vs=1e-6;a_ws=1e-10;a_ut=5e2;a_vt=5e2;a_wt=5e2;
+Q=[a_us;a_vs;a_ws;a_ut*sqrt(2*V_airspeed_body_norm_knots*dt/L_u)*sigma_u;a_vt*sqrt(2*V_airspeed_body_norm_knots*dt/L_u)*sigma_v;a_wt*sqrt(2*V_airspeed_body_norm_knots*dt/L_u)*sigma_w];
+Q_process=diag(Q)*dt^2; %Equation 33
+%% Turbulence wind components of the wind vector
 u_t_ned = v_wind_ned(4,1);
 v_t_ned = v_wind_ned(5,1);
 w_t_ned=  v_wind_ned(6,1);

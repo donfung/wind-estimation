@@ -1,4 +1,4 @@
-function [v_wind_ned,A,Q_process] = wind_model(X)
+function [v_wind_ned,A] = wind_model(X)
 %wind model calls the dryden model and 
 v_aircraft_NED(1,1)=X(4,1); 
 v_aircraft_NED(2,1)=X(5,1);
@@ -8,7 +8,7 @@ theta=X(8,1);
 psi=X(9,1);
 v_wind=X(13:18,1);
 altitude=100;
-[v_wind_ned,A,Q_process] = dryden_wind_model(v_aircraft_NED,v_wind,altitude,phi,theta,psi);
+[v_wind_ned,A] = dryden_wind_model(v_aircraft_NED,v_wind,altitude,phi,theta,psi);
 %outputArg2 = inputArg2;
 end
 
