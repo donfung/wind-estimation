@@ -6,7 +6,7 @@ J = diag([1, 1, 1]);
 
 %% INITIAL CONDITIONS
 alt0 = 1000;
-initVelBody = [1, 0, 0]; % [u, v, w]_body 
+initVelBody  = [5, 1, 0]; % [u, v, w]_body 
 initAttitude = [0, 0, 0]; % [phi, theta, psi]
 initGroundSpeedEst = norm(initVelBody);
 
