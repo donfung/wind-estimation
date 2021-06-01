@@ -94,6 +94,7 @@ function [A,B] = longitudinal_Navion_A_B()
     % x = [ubar, alpha, q, theta]^T   u = [de, dT]^T
     % xdot = Ax + Bu
     % M1*xdot = M2*x + M3*u
+    % Equation 1-59 Blakelock
     M1 = [m*u0/(S*qinf) -c/(2*u0)*C_X_alphadot              0               0;
           0             m*u0/(S*qinf)-c*C_Z_alphadot/(2*u0) 0               0;
           0             -c*C_M_alphadot/(2*u0)              Iy/(S*qinf*c)   0;
