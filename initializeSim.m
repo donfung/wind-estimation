@@ -5,7 +5,7 @@ J = diag([1, 1, 1]);
 
 %% INITIAL CONDITIONS
 alt0 = 1000;
-initVelBody  = [40, 5, 0]; % [u, v, w]_body 
+initVelBody  = [80, 3, 0]; % [u, v, w]_body 
 initAttitude = [0, 0, 0]; % [phi, theta, psi]
 initGroundSpeedEst = norm(initVelBody);
 
@@ -17,7 +17,7 @@ initGroundSpeedEst = norm(initVelBody);
 
 %% WIND PARAMETERS
 windNorthStatic = -10;
-windEastStatic = 7;
+windEastStatic = 2;
 windDownStatic = 0;
 
 %% FLAGS
@@ -25,7 +25,7 @@ windDownStatic = 0;
 sensorNoiseFlag     = 0;  % Sensor noises
 turbulentWindFlag   = 0;  % Turn wind turbulence on/off 
 staticWindFlag      = 1;  % Turn static wind on/off
-gustWindFlag        = 0;  % Turn gust (step changes) on/off
+gustWindFlag        = 1;  % Turn gust (step changes) on/off
 
 %% EKF PARAMETERS
 % mu = [pn, pe, vg, chi, wn, we]
@@ -53,6 +53,12 @@ if staticWindFlag
 else
     disp('Static wind disabled');
 end
+if staticWindFlag 
+    disp('Gusts enabled');
+else
+    disp('Gusts disabled');
+end
+
 disp(' ');
 disp(['Static North Wind: ', num2str(windNorthStatic), 'mps']);
 disp(['Static East Wind: ', num2str(windEastStatic), 'mps']);
