@@ -20,8 +20,10 @@ m = 500;
 x = zeros(18, n);
 
 % UVW is ground speed. i.e uvwGround = C_body2inertial*uvw_air + wind_in_NED
-windNed0 = [-50, 77, 0];
-uvw0 = [2, 7, 0];     % THIS ONE WORKS
+% windNed0 = [-50, 77, 0];
+windNed0 = [0, 2, 0];
+
+uvw0 = [5, 0, 0];     % THIS ONE WORKS
 % uvw0 = [50, 30, 0];   % THIS ONE DOESNT WORK. It seems like large values of u, v cause the estimator to fail 
 
 vg0 = norm(uvw0);
@@ -38,7 +40,6 @@ x(:, 1) = [0, 0, -1000, ...     % 1000m alt           (1-3)
            chi0, ...            % course angle        (14)
            va0, ...             % airspeed            (15)
            windNed0]';          % wind NED            (16-18)
- 
 
 %% True states
 for i = 2:n
@@ -64,7 +65,7 @@ for i = 2:n
     vaDot       = 0;    % Manually update Va
     windDot     = [0;0;0];
     xdot        = [xyzNedDot; uvwDot; attDot; pqrDot; vgDot; chiDot; vaDot; windDot];
-
+    
     x(:, i) = x(:, i-1) + xdot*dt;
     
     x(14, i) = atan2(uvw(2), uvw(1));  % course angle Chi
@@ -73,16 +74,16 @@ for i = 2:n
     x(15, i) = norm(uvw - windNed);  % airspeed
 
 %     y(:, i) = measModel(x(:, i));
-    if i > 3000 && i < 6000
-        windNed = [50, 12, 0];
-        x(16:18, i) = windNed;
-    elseif i > 6000 && i < 12000
-        windNed = [-67, 88, 0];
-        x(16:18, i) = windNed;
-    elseif i > 12000 && i < 17000
-        windNed = [0, -50, 0];
-        x(16:18, i) = windNed;
-    end
+%     if i > 3000 && i < 6000
+%         windNed = [50, 12, 0];
+%         x(16:18, i) = windNed;
+%     elseif i > 6000 && i < 12000
+%         windNed = [-67, 88, 0];
+%         x(16:18, i) = windNed;
+%     elseif i > 12000 && i < 17000
+%         windNed = [0, -50, 0];
+%         x(16:18, i) = windNed;
+%     end
     
 end
 

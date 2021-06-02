@@ -13,6 +13,8 @@ function mu_kp = transitionDynamics(mu, uKF, dt)
     theta   = uKF(5);
     psi     = uKF(6);
     alt     = uKF(7);
+    wnNoise = uKF(13);
+    weNoise = uKF(14);
     
     psiDot = q*sin(phi)/cos(theta) + r*cos(phi)/cos(theta);
     g = 9.81;
@@ -22,9 +24,9 @@ function mu_kp = transitionDynamics(mu, uKF, dt)
     [sigmaU, sigmaV, sigmaW] = getTurbulenceSigmas(alt);
     
     % Compute next turbulence value using difference equation (in MATLAB)
-    u_t_ned = (1 - va * dt / Lu) * wnTurb + sqrt(2 * va * dt / Lu) * sigmaU * randn(1);
-    v_t_ned = (1 - va * dt / Lv) * weTurb + sqrt(2 * va * dt / Lv) * sigmaV * randn(1);
-    
+    u_t_ned = (1 - va * dt / Lu) * wnTurb + realsqrt(2 * va * dt / Lu) * sigmaU * wnNoise;
+    v_t_ned = (1 - va * dt / Lv) * weTurb + realsqrt(2 * va * dt / Lv) * sigmaV * weNoise;
+
     % Convert from kts to mps
     kts2mps = 0.5144;
     u_t_ned = u_t_ned * kts2mps; 

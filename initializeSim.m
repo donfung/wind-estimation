@@ -1,7 +1,19 @@
-dt = 0.01;
+clear all;
+close all;
 
+%% Initialization script for the wind estimation simulation
+% Below:
+%       1. Initial conditions
+%       2. Wind parameters
+%       3. Simulation flags
+%       4. EKF parameters
+%       5. Sensor parameters
+
+dt = 0.01;
 mass = 1000;
 J = diag([1, 1, 1]);
+nStates = 18;
+nEstStates = 8;
 
 %% INITIAL CONDITIONS
 alt0 = 1000;
@@ -22,19 +34,26 @@ windDownStatic = 0;
 
 %% FLAGS
 % 1 = enable. 0 = disable
-sensorNoiseFlag     = 0;  % Sensor noises
-turbulentWindFlag   = 0;  % Turn wind turbulence on/off 
-staticWindFlag      = 1;  % Turn static wind on/off
-gustWindFlag        = 1;  % Turn gust (step changes) on/off
+sensorNoiseFlag     = 1;  % Sensor noises
+turbulentWindFlag   = 1;  % Turn wind turbulence on/off 
+staticWindFlag      = 0;  % Turn static wind on/off
+gustWindFlag        = 0;  % Turn gust (step changes) on/off
 
 %% EKF PARAMETERS
 % mu = [pn, pe, vg, chi, wn, we]
 
-Qekf = 1*eye(6);
-Rekf = 1*eye(6);
+Qekf = 1*eye(nEstStates);
+Rekf = 1*eye(7);
 
-initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
-initCovarianceEkf = 0.1*eye(6);
+initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0, 0, 0];
+initCovarianceEkf = 0.1*eye(nEstStates);
+
+%% SENSOR PARAMETERS
+suite = 'high';  % String: 'low', 'mid', or 'high'
+var = getSensorVariances(suite);
+
+
+
 
 %% DISPLAY FOR USER 
 disp(' ');
