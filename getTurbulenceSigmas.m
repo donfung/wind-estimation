@@ -1,12 +1,20 @@
-function [sigma_w,sigma_v,sigma_u] = getTurbulenceSigmas(alt_feet,X)
+function [sigmaU_mps, sigmaV_mps, sigmaW_mps] = getTurbulenceSigmas(alt_ft)
+% Reference: https://www.mathworks.com/help/aeroblks/drydenwindturbulencemodeldiscrete.html
 
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
-      if X=="low"
-       W_20=25;%knots wind speed at 20 feet
-     %% noise amplitudes Equation 16 and 17
-       sigma_w=0.1*W_20; 
-       sigma_v=(sigma_w*0.1)/(0.177+0.000823*alt_feet)^0.4;
-       sigma_u=sigma_v;
+% The turbulence intensities are given below, where W20 is the wind speed at 20 feet (6 m).
+% Typically for light turbulence, the wind speed at 20 feet is 15 knots; for moderate turbulence,
+% the wind speed is 30 knots, and for severe turbulence, the wind speed is 45 knots.
+    kts2mps = 0.514;
+
+    W20 = 25;  % knots wind speed at 20 feet, explained in MATLAB documentation
+
+    %% noise amplitudes Equation 16 and 17
+    sigmaW_kts = 0.1 * W20;
+    sigmaV_kts = (sigmaW_kts * 0.1) / (0.177 + 0.000823 * alt_ft)^0.4;
+    sigmaU_kts = sigmaV_kts;
+
+    sigmaU_mps = sigmaU_kts * kts2mps;
+    sigmaV_mps = sigmaV_kts * kts2mps;
+    sigmaW_mps = sigmaW_kts * kts2mps;
+
 end
-
