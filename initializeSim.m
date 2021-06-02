@@ -5,7 +5,7 @@ J = diag([1, 1, 1]);
 
 %% INITIAL CONDITIONS
 alt0 = 1000;
-initVelBody  = [80, 3, 0]; % [u, v, w]_body 
+initVelBody  = [80, 43, 0]; % [u, v, w]_body 
 initAttitude = [0, 0, 0]; % [phi, theta, psi]
 initGroundSpeedEst = norm(initVelBody);
 
@@ -16,8 +16,8 @@ initGroundSpeedEst = norm(initVelBody);
 %       Psi = 180: South
 
 %% WIND PARAMETERS
-windNorthStatic = -10;
-windEastStatic = 2;
+windNorthStatic = 15;
+windEastStatic = -32;
 windDownStatic = 0;
 
 %% FLAGS
