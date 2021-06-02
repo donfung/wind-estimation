@@ -37,7 +37,11 @@ initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
 initCovarianceEkf = 0.1*eye(6);
 
 %% UKF
+Qukf = 0.01*eye(6);
+Rukf = 0.1*eye(6);
+
 initEstimateUKF = [0, 0, initGroundSpeedEst, initAttitude(3), 15, -32];
+initCovarianceUKF = 0.001*eye(6);
 
 %% Particle filter
 % num_particles = 100;
