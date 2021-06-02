@@ -36,6 +36,9 @@ function A = getDynamicsJacobian(mu, uKF)
       
 
  %% Linearized Dryden Model     
+       
+       Q=2;
+       noise=randn(1,1)*Q;
        v_aircraft_airspeed_body=R_bn*(v_aircraft_ned)-R_bn*v_wind_ned(1:3);% airspeed body frame
 
        v_airspeed_body_norm=norm(v_aircraft_airspeed_body);
