@@ -36,6 +36,14 @@ Rekf = 1*eye(6);
 initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
 initCovarianceEkf = 0.1*eye(6);
 
+%% UKF
+initEstimateUKF = [0, 0, initGroundSpeedEst, initAttitude(3), 15, -32];
+
+%% Particle filter
+% num_particles = 100;
+initEstimateParticleFilter = [0, 0, initGroundSpeedEst, initAttitude(3), 15, -30];
+
+
 %% DISPLAY FOR USER 
 disp(' ');
 if sensorNoiseFlag 

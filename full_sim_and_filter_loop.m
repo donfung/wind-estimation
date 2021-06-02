@@ -17,7 +17,7 @@ close all
 global u0;
 u0 = 53.6448; % m/s which is 176 ft/s
 global dt;
-dt = 0.01; T = 20; t = 0:dt:T;
+dt = 0.01; T = 40; t = 0:dt:T;
 global state_dim; global action_dim; global y_dim; global wind_state_dim;
 state_dim = 19; 
 wind_state_dim = 6;
@@ -100,7 +100,9 @@ end
 
 function Q = Q_matrix(time)
     global state_dim; global wind_state_dim;
-    Q = 0.001*eye(state_dim, state_dim);
+    Q = zeros(state_dim,state_dim);
+    Q(4:6, 4:6) = 0.01*eye(3,3);
+    Q(10:12, 10:12) = 0.01*eye(3,3);
     Q(end-wind_state_dim+1:end, end-wind_state_dim+1:end) = wind_Q_matrix(time);
 end
 
@@ -112,7 +114,7 @@ end
 
 % maneuver_type can be cruise, climb, descend, turn
 function action = PID(maneuver_type)
-    % TODO (Don)
+    % TODO (Somrita) - try putting in an altitude hold PID
 %     error('Not implemented.');
     action = zeros(4,1);
 end
