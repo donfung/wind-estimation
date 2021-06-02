@@ -49,11 +49,7 @@ function A = getDynamicsJacobian(mu, uKF)
        L_u=alt_feet/(0.177+0.000823*alt_feet)^1.2; %turbulence length scale
        L_v=L_u;
        
-       W_20=25;%knots wind speed at 20 feet
-     %% noise amplitudes Equation 16 and 17
-       sigma_w=0.1*W_20; 
-       sigma_v=(sigma_w*0.1)/(0.177+0.000823*h)^0.4;
-       sigma_u=sigma_v;
+  
 
        u_t_ned=(1-v_airspeed_body_norm_knots*dt/L_u)*u_t_ned+sqrt(2*v_airspeed_body_norm_knots*dt/L_u)*sigma_u*noise;
        u_t_ned=u_t_ned*0.5144; % ug in m/s
