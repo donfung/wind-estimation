@@ -1,6 +1,8 @@
-function [sigma_w,sigma_v,sigma_u] = getTurbulenceSigmas(alt_feet)
+function [sigma_w,sigma_v,sigma_u] = getTurbulenceSigmas(alt_feet,X)
+
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
+      if X=="low"
        W_20=25;%knots wind speed at 20 feet
      %% noise amplitudes Equation 16 and 17
        sigma_w=0.1*W_20; 
