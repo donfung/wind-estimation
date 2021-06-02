@@ -43,7 +43,7 @@ function A = getDynamicsJacobian(mu, uKF)
 
        v_airspeed_body_norm=norm(v_aircraft_airspeed_body);
 
-       v_airspeed_body_norm_knots=V_airspeed_body_norm*1.943;
+       v_airspeed_body_norm_knots=v_airspeed_body_norm*1.943;
        alt_feet=alt*3.28;
        dt=0.1;
        u_t_ned=wtn;
