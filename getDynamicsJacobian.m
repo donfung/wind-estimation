@@ -14,7 +14,7 @@ function A = getDynamicsJacobian(mu, uKF)
     theta = uKF(5);
     psi = uKF(6);
     alt=uFK(7);
-    v_airspeed_body=uKF(8:10);
+    v_aircraft_ned=uKF(8:10);
     % Do DCM outside of the function and assign to R_bn
     
     
@@ -36,11 +36,17 @@ function A = getDynamicsJacobian(mu, uKF)
       
 
  %% Linearized Dryden Model     
+       v_aircraft_airspeed_body=R_bn*(v_aircraft_ned)-R_bn*v_wind_ned(1:3);% airspeed body frame
+
+       v_airspeed_body_norm=norm(v_aircraft_airspeed_body);
+
+       v_airspeed_body_norm_knots=V_airspeed_body_norm*1.943;
+       alt_feet=alt*3.28;
        dt=0.1;
        u_t_ned=wtn;
        v_t_ned=wte;
-       L_w=alt;
-       L_u=alt/(0.177+0.000823*alt)^1.2; %turbulence length scale
+       L_w=alt_feet;
+       L_u=alt_feet/(0.177+0.000823*alt_feet)^1.2; %turbulence length scale
        L_v=L_u;
       
        u_t_ned=(1-v_airspeed_body_norm_knots*dt/L_u)*u_t_ned+sqrt(2*v_airspeed_body_norm_knots*dt/L_u)*sigma_u*noise;
@@ -64,7 +70,7 @@ function A = getDynamicsJacobian(mu, uKF)
       e= 1-dt*(v_airspeed_body_norm/L_u);
       f= 1-dt*(v_airspeed_body_norm/L_v);
       
-      
+     
       A_with_wind = [0, 0, cos(chi),    -vg*sin(chi),             0,      0 ,0,  0;
           0, 0, sin(chi),    vg*cos(chi),    0,                   0,      0 ,    0;
           0, 0, -vgDot/vg,   0,              -psiDot*va*sin(psi), psiDot*va*cos(psi), 0, 0;
