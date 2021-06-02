@@ -16,8 +16,10 @@ initGroundSpeedEst = norm(initVelBody);
 %       Psi = 180: South
 
 %% WIND PARAMETERS
-windNorthStatic = 15;
-windEastStatic = -32;
+% windNorthStatic = 15;
+% windEastStatic = -32;
+windNorthStatic = -32;
+windEastStatic = -15;
 windDownStatic = 0;
 
 %% FLAGS
