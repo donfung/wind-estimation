@@ -5,7 +5,7 @@ J = diag([1, 1, 1]);
 nStates = 18;
 nEstStates = 8;
 %% INITIAL CONDITIONS
-alt0 = 1000;
+alt0 = 600;
 initVelBody  = [80, 43, 0]; % [u, v, w]_body 
 initAttitude = [0, 0, 0]; % [phi, theta, psi]
 initGroundSpeedEst = norm(initVelBody);
@@ -17,16 +17,14 @@ initGroundSpeedEst = norm(initVelBody);
 %       Psi = 180: South
 
 %% WIND PARAMETERS
-windNorthStatic = 15;
-windEastStatic = -32;
-% windNorthStatic = -32;
-% windEastStatic = -15;
+windNorthStatic = 14;
+windEastStatic = -9;
 windDownStatic = 0;
 
 %% FLAGS
 % 1 = enable. 0 = disable
-sensorNoiseFlag     = 0;  % Sensor noises
-turbulentWindFlag   = 0;  % Turn wind turbulence on/off 
+sensorNoiseFlag     = 1;  % Sensor noises
+turbulentWindFlag   = 1;  % Turn wind turbulence on/off 
 staticWindFlag      = 1;  % Turn static wind on/off
 gustWindFlag        = 1;  % Turn gust (step changes) on/off
 
@@ -37,17 +35,26 @@ var = getSensorVariances(suite);
 %% EKF PARAMETERS
 % mu = [pn, pe, vg, chi, wn, we]
 
-% Working
-% Qekf = 1*eye(6);
-% Rekf = 1*eye(6);
-% initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
-% initCovarianceEkf = 0.1*eye(6);
+Qekf = 1e-6*eye(nEstStates);
+Qekf = diag([1e-5, 1e-5, ...   % pn, pe
+             1, 1e-3, ...      % vg, chi
+             1, 1, ...   % wn, we static
+             1, 1]);         % wn, we turb
+         
+Rekf = 0.01*eye(7);
+Rekf = diag([1, 1, ...         % pn, pe
+             1, 1e-3, ...      % vg, chi
+             1, 1]);     % wn, we
+             
+initEstimateEkf = [0, 0, ...
+                   initGroundSpeedEst, initAttitude(3), ...
+                   windNorthStatic + 4*randn, windEastStatic + 4*randn, ...
+                   0, 0];
+initCovarianceEkf = diag([1e-3, 1e-3, ...   % pn, pe
+                          2, 5e-3, ...      % vg, chi
+                          1e-4, 1e-4, ...   % wn, we static
+                          10, 10]);         % wn, we turb
 
-% with turb
-Qekf = 1e-4*eye(8);
-Rekf = 1e-3*eye(7);
-initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0, 0, 0];
-initCovarianceEkf = 0.1*eye(8);
 
 %% UKF
 Qukf = 0.01*eye(6);

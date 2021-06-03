@@ -1,4 +1,4 @@
-function mu_kp = transitionDynamics(mu, uKF, dt)
+function mu_kp = transitionDynamicsTest(mu, uKF, dt)
     vg     = mu(3);
     chi    = mu(4);
     wnStc  = mu(5);
@@ -54,4 +54,12 @@ function mu_kp = transitionDynamics(mu, uKF, dt)
              u_t_ned_mps;
              v_t_ned_mps];
          
+    mu_kp = [mu(1) + dt * vg*cos(chi);
+             mu(2) + dt * vg*sin(chi);
+             mu(3) + dt * ((va*cos(psi)+wnStc)*(-va*psiDot*sin(psi)) + (va*sin(psi) + weStc)*(va*psiDot*cos(psi)))/vg;
+             mu(4) + dt * g/vg*tan(phi)*cos(chi - psi);
+             mu(5);
+             mu(6);
+             u_t_ned_mps;
+             v_t_ned_mps];
 end

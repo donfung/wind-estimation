@@ -14,7 +14,7 @@ function [Lu, Lv, Lw] = getTurbulentLengthScales(alt_m)
     Lu_ft = alt_ft / (0.177+0.000823 * alt_ft)^1.2; 
     Lv_ft = Lu_ft;
     Lw_ft = alt_ft;
-        
+    
     if alt_ft > 2000 
         % "Medium/High altitude model"
         Lu_ft = 1750;

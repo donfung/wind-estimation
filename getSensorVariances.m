@@ -13,11 +13,11 @@ deg2rad = pi/180;
     switch sensorType
         case 'low' 
             % Low-tier (RC)
-            var.airspeed_mps        = 1.5^2;              % SDP3x (https://www.sensirion.com/en/flow-sensors/differential-pressure-sensors/worlds-smallest-differential-pressure-sensor/)
+            var.airspeed_mps        = 1.2^2;              % SDP3x (https://www.sensirion.com/en/flow-sensors/differential-pressure-sensors/worlds-smallest-differential-pressure-sensor/)
             var.attitude_rad        = 0.5 * deg2rad;    % VectorNav-100 (Heading accuracy is 2deg RMS)
-            var.pqr_radps           = 0.25^2 * deg2rad;  % VectorNav-100
+            var.pqr_radps           = 0.20^2 * deg2rad;  % VectorNav-100
             var.velocityGps_mps     = 0.1^2;       
-            var.position_m          = 5^2;              % u-blox 4 (https://wiki.openstreetmap.org/wiki/GPS_Chipset)
+            var.position_m          = 2.5^2;              % u-blox 4 (https://wiki.openstreetmap.org/wiki/GPS_Chipset)
             var.altitude_m          = 0.2; % 20cm accuracy
             
         case 'mid' 

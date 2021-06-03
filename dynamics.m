@@ -3,6 +3,8 @@ function f = dynamics(mu, uKF, dt)
     chi = mu(4);
     wn  = mu(5);
     we  = mu(6);
+    wnt = mu(7);
+    wet = mu(8);
     
     va = uKF(1);
     q = uKF(2);
@@ -16,12 +18,12 @@ function f = dynamics(mu, uKF, dt)
     
     xdot = [vg*cos(chi);
             vg*sin(chi);
-            ((va*cos(psi)+wn)*(-va*psiDot*sin(psi)) + (va*sin(psi) + we)*(va*psiDot*cos(psi)))/vg;
+            ((va*cos(psi)+wn + wnt)*(-va*psiDot*sin(psi)) + (va*sin(psi) + we + wet)*(va*psiDot*cos(psi)))/vg;
             g/vg*tan(phi)*cos(chi - psi);
             0;
             0;
             0;  % ??? (north turb)
-            0]; % ??? (east turb)
+            0]; % ??? (east turb
         
     f = mu + dt*xdot;
     

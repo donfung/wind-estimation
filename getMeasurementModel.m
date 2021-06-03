@@ -12,17 +12,13 @@ function h = getMeasurementModel(mu, uKF)
     % Airspeed and Heading assumed known
     va = uKF(1);
     psi = uKF(6);
-    d1Rn2b = uKF(10:12);
-    
-    vs = [wnStatic; weStatic; 0];
-    vt = [wnTurb; weTurb; 0];
     
     h = [pn;
          pe;
          vg;
          chi;
-         va*cos(psi) - vg*cos(chi) + wnStatic;
-         va*sin(psi) - vg*sin(chi) + weStatic;
-         0]; % ???
+         va*cos(psi) - vg*cos(chi) + wnStatic + wnTurb;   % wind triangle
+         va*sin(psi) - vg*sin(chi) + weStatic + weTurb]; 
 
+     
 end

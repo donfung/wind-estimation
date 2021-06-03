@@ -1,4 +1,4 @@
-function C = getMeasurementJacobian(mu, uKF)
+function C = getMeasurementJacobianTest(mu, uKF)
     vg = mu(3);
     chi = mu(4);
     
@@ -8,7 +8,7 @@ function C = getMeasurementJacobian(mu, uKF)
          0, 1, 0, 0, 0, 0, 0, 0;
          0, 0, 1, 0, 0, 0, 0, 0;
          0, 0, 0, 1, 0, 0, 0, 0;
-         0, 0, -cos(chi),  vg*sin(chi), 1, 0, 0, 0;         % wn static
-         0, 0, -sin(chi), -vg*cos(chi), 0, 1, 0, 0];         % we static
+         0, 0, -cos(chi),  vg*sin(chi), 1, 0, 1, 0;         % wn static
+         0, 0, -sin(chi), -vg*cos(chi), 0, 1, 0, 1];         % we static
 
 end

@@ -36,25 +36,5 @@ function A = getDynamicsJacobian(mu, uKF, dt)
           0, 0, dchiDotdvg,  dchiDotdchi,    0,                   0;
           0, 0, 0,           0,              0,                   0;
           0, 0, 0,           0,              0,                   0];
-    
- %% Linearized Dryden Model (MIL-F-8785C)   
-    [Lu, Lv, Lw]                = getTurbulentLengthScales(alt);        % Altitude in meters
-    [sigmaU, sigmaV, sigmaW]    = getTurbulenceSigmas(alt);
-    
-    %% Partial derivatives of the dryden turbulence transition equation with respect to static and turbulent wind velocity components
-%     A(7, 5) = -1 * (dt/Lu) * (delVa_delUs) * wnTurb;
-%     A(7, 6) = -1 * (dt/Lu) * (delVa_delVs) * wnTurb;
-%     A(8, 5) = -1 * (dt/Lv) * (delVa_delUs) * weTurb;
-%     A(8, 6) = -1 * (dt/Lv) * (delVa_delVs) * weTurb;
-%     A(7, 7) = -1 * dt*(va / Lu);
-%     A(8, 8) = -1 * dt*(va / Lv);
-
-% Playing around with different derivatives
-%     A(7, 7) = -va/Lu*wnTurb + 1/dt * sqrt(2 * va * dt / (Lu))*sigmaU;
-%     A(8, 8) = -va/Lv*weTurb + 1/dt * sqrt(2 * va * dt /Lv)*sigmaV;
-
-% Playing around with different derivatives
-%     A(7, 7) = -va/Lu*wnTurb + sqrt(2 * va  / Lu)*sigmaU;
-%     A(8, 8) = -va/Lv*weTurb + sqrt(2 * va  / Lv)*sigmaV;
-
+        
 end
