@@ -17,10 +17,10 @@ initGroundSpeedEst = norm(initVelBody);
 %       Psi = 180: South
 
 %% WIND PARAMETERS
-% windNorthStatic = 15;
-% windEastStatic = -32;
-windNorthStatic = -32;
-windEastStatic = -15;
+windNorthStatic = 15;
+windEastStatic = -32;
+% windNorthStatic = -32;
+% windEastStatic = -15;
 windDownStatic = 0;
 
 %% FLAGS
@@ -58,8 +58,11 @@ initCovarianceUKF = 0.001*eye(6);
 
 %% Particle filter
 % num_particles = 100;
-initEstimateParticleFilter = [0, 0, initGroundSpeedEst, initAttitude(3), 15, -30];
+Qpf = 0.01*eye(6);
+Rpf = 0.1*eye(6);
 
+initEstimateParticleFilter = [0, 0, initGroundSpeedEst, initAttitude(3), 15, -32];
+initCovarianceParticleFilter = 0.11*eye(6);
 
 %% DISPLAY FOR USER 
 disp(' ');
