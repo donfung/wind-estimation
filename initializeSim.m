@@ -1,8 +1,9 @@
 dt = 0.01;
-
 mass = 1000;
 J = diag([1, 1, 1]);
 
+nStates = 18;
+nEstStates = 8;
 %% INITIAL CONDITIONS
 alt0 = 1000;
 initVelBody  = [80, 43, 0]; % [u, v, w]_body 
@@ -29,14 +30,24 @@ turbulentWindFlag   = 0;  % Turn wind turbulence on/off
 staticWindFlag      = 1;  % Turn static wind on/off
 gustWindFlag        = 1;  % Turn gust (step changes) on/off
 
+%% SENSORS
+suite = 'low';  % String: 'low', 'mid', or 'high'
+var = getSensorVariances(suite);
+
 %% EKF PARAMETERS
 % mu = [pn, pe, vg, chi, wn, we]
 
-Qekf = 1*eye(6);
-Rekf = 1*eye(6);
+% Working
+% Qekf = 1*eye(6);
+% Rekf = 1*eye(6);
+% initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
+% initCovarianceEkf = 0.1*eye(6);
 
-initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0];
-initCovarianceEkf = 0.1*eye(6);
+% with turb
+Qekf = 1e-4*eye(8);
+Rekf = 1e-3*eye(7);
+initEstimateEkf = [0, 0, initGroundSpeedEst, initAttitude(3), 0, 0, 0, 0];
+initCovarianceEkf = 0.1*eye(8);
 
 %% UKF
 Qukf = 0.01*eye(6);

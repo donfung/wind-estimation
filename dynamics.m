@@ -19,7 +19,9 @@ function f = dynamics(mu, uKF, dt)
             ((va*cos(psi)+wn)*(-va*psiDot*sin(psi)) + (va*sin(psi) + we)*(va*psiDot*cos(psi)))/vg;
             g/vg*tan(phi)*cos(chi - psi);
             0;
-            0];
+            0;
+            0;  % ??? (north turb)
+            0]; % ??? (east turb)
         
     f = mu + dt*xdot;
     
