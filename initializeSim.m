@@ -57,11 +57,24 @@ initCovarianceEkf = diag([1e-3, 1e-3, ...   % pn, pe
 
 
 %% UKF
-Qukf = 0.01*eye(6);
-Rukf = 0.1*eye(6);
+% Qukf = 0.01*eye(nEstStates);
+% Rukf = 0.1*eye(6);
+Qukf = diag([1e-5, 1e-5, ...   % pn, pe
+             1, 1e-3, ...      % vg, chi
+             .1, .1, ...   % wn, we static
+             .1, .1]);         % wn, we turb
+Rukf = diag([1, 1, ...         % pn, pe
+             1, 1e-3, ...      % vg, chi
+             1, 1]);     % wn, we
 
-initEstimateUKF = [0, 0, initGroundSpeedEst, initAttitude(3), 15, -32];
-initCovarianceUKF = 0.001*eye(6);
+initEstimateUKF = [0, 0, initGroundSpeedEst, initAttitude(3),...
+                   windNorthStatic + 1*randn, windEastStatic + 1*randn, ...
+                   0, 0];
+% initCovarianceUKF = 0.001*eye(nEstStates);
+initCovarianceUKF = diag([1e-3, 1e-3, ...   % pn, pe
+                          2, 5e-3, ...      % vg, chi
+                          1e-4, 1e-4, ...   % wn, we static
+                          1, 1]);         % wn, we turb
 
 %% Particle filter
 % num_particles = 100;
