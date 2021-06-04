@@ -30,7 +30,8 @@ gustWindFlag        = 1;  % Turn gust (step changes) on/off
 
 %% SENSORS
 suite = 'low';  % String: 'low', 'mid', or 'high'
-var = getSensorVariances(suite);
+var        = getSensorVariances(suite);
+sampleTime = getSensorSampleTimes(suite, dt);
 
 %% EKF PARAMETERS
 % mu = [pn, pe, vg, chi, wn, we]
