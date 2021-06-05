@@ -29,7 +29,7 @@ staticWindFlag      = 1;  % Turn static wind on/off
 gustWindFlag        = 1;  % Turn gust (step changes) on/off
 
 %% SENSORS
-suite = 'high';  % String: 'low', 'mid', or 'high'
+suite = 'low';  % String: 'low', 'mid', or 'high'
 var        = getSensorVariances(suite);
 sampleTime = getSensorSampleTimes(suite, dt);
 
@@ -64,6 +64,11 @@ Qukf = diag([1e-5, 1e-5, ...   % pn, pe
              1, 1e-3, ...      % vg, chi
              .1, .1, ...   % wn, we static
              .1, .1]);         % wn, we turb
+% Qukf = diag([1e-5, 1e-5, ...   % pn, pe
+%              1, 1e-3, ...      % vg, chi
+%              .01, .01, ...   % wn, we static
+%              .01, .01]);         % wn, we turb  
+         
 Rukf = diag([1, 1, ...         % pn, pe
              1, 1e-3, ...      % vg, chi
              1, 1]);     % wn, we
@@ -76,7 +81,10 @@ initCovarianceUKF = diag([1e-3, 1e-3, ...   % pn, pe
                           2, 5e-3, ...      % vg, chi
                           1e-4, 1e-4, ...   % wn, we static
                           1, 1]);         % wn, we turb
-
+% initCovarianceUKF = diag([1e-3, 1e-3, ...   % pn, pe
+%                           2, 5e-3, ...      % vg, chi
+%                           1e-4, 1e-4, ...   % wn, we static
+%                           .01, .01]);         % wn, we turb
 %% Particle filter
 % num_particles = 100;
 Qpf = 0.01*eye(6);
