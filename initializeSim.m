@@ -29,7 +29,7 @@ staticWindFlag      = 1;  % Turn static wind on/off
 gustWindFlag        = 1;  % Turn gust (step changes) on/off
 
 %% SENSORS
-suite = 'low';  % String: 'low', 'mid', or 'high'
+suite = 'high';  % String: 'low', 'mid', or 'high'
 var        = getSensorVariances(suite);
 sampleTime = getSensorSampleTimes(suite, dt);
 
