@@ -3,12 +3,12 @@ function sampleTime = getSensorSampleTimes(sensorType, dt)
     switch sensorType
         case 'low' 
             % Low-tier (RC)
-            sampleTime.airspeed        = 1/50;  % 50Hz
-            sampleTime.attitude        = 1/400; % 400Hz
-            sampleTime.pqr             = 1/400; % 400Hz
-            sampleTime.gpsGroundSpeed  = 1/20;  % 20Hz    
+            sampleTime.airspeed        = 1/20;  % 50Hz
+            sampleTime.attitude        = 1/200; % 400Hz
+            sampleTime.pqr             = 1/200; % 400Hz
+            sampleTime.gpsGroundSpeed  = 1/10;  % 20Hz    
             sampleTime.gpsPosition     = 1/10;  % 20Hz
-            sampleTime.gpsCourseAngle  = 1/20;  % 20Hz
+            sampleTime.gpsCourseAngle  = 1/10;  % 20Hz
             sampleTime.altimeter       = 1/50;  % 50Hz
             
         case 'mid' 
